@@ -1309,7 +1309,7 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
         {/* Total Value aligned right */}
         <div className="flex justify-end items-center mb-4">
           <span className="text-[11px] font-bold text-black mr-6">Total Value</span>
-          <div className="border border-black w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white">
+          <div className="w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white" style={{ border: '3px double #000', margin: 0 }}>
             {quote.total_value.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
@@ -1318,18 +1318,18 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
         </div>
 
         {/* Terms / Remarks Blocks */}
-        <div className="text-[9.5px] leading-[1.25] text-left space-y-0.5 text-slate-700 pl-4 mb-3">
-          <div className="font-bold text-black">Terms & Conditions:</div>
-          <div className="space-y-[1px]">
-            <p>- 30 days validity from date of quotation.</p>
-            <p>- All prices above are quoted in THB</p>
-            <p>- All prices does not include 7% VAT</p>
-            <p>- Payment term: {quote.payment_term || '30 Days'} from date of invoice.</p>
-            <p>- Please state our IKM reference no. on your work/purchase order.</p>
-            <p>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
-            <p className="pl-3">or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
-            <p>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
-            <p>- Above price will be charged by unit rate and actual</p>
+        <div className="text-[9.5px] text-left text-slate-700 pl-4 mb-3" style={{ lineHeight: '1.1' }}>
+          <div className="font-bold text-black mb-1">Terms & Conditions:</div>
+          <div className="flex flex-col" style={{ gap: '1px' }}>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- 30 days validity from date of quotation.</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices above are quoted in THB</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices does not include 7% VAT</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Payment term: {quote.payment_term || '30 Days'} from date of invoice.</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Please state our IKM reference no. on your work/purchase order.</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
+            <p className="m-0 p-0 pl-3" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
+            <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Above price will be charged by unit rate and actual</p>
           </div>
         </div>
 
