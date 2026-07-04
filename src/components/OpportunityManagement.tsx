@@ -402,12 +402,29 @@ function OppForecast({ opps }: any) {
 function OppForm({ opp, onSave, onCancel }: any) {
   const isEdit = !!opp;
   const [customers, setCustomers] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([
+    { id: "Wiriya S.", fullname: "Wiriya S.", role: "Sales Rep" },
+    { id: "ธนพล คำดี (S03)", fullname: "ธนพล คำดี (S03)", role: "Sales Rep" },
+    { id: "Pimjai K.", fullname: "Pimjai K.", role: "Sales Manager" },
+    { id: "Ekachai Wongdee (S01)", fullname: "Ekachai Wongdee (S01)", role: "Sales Rep" },
+    { id: "Suchada Lertviriya (S02)", fullname: "Suchada Lertviriya (S02)", role: "Sales Rep" }
+  ]);
 
   useEffect(() => {
     // @ts-ignore
     if(window.SupabaseDB) {
        // @ts-ignore
        window.SupabaseDB.getCustomers().then(c => setCustomers(c)).catch(() => {});
+       // @ts-ignore
+       window.SupabaseDB.getUsers().then(dbUsers => {
+         if (dbUsers && dbUsers.length > 0) {
+           setUsers(prev => {
+             const existingIds = new Set(prev.map(p => p.id));
+             const filteredNew = dbUsers.filter((u: any) => !existingIds.has(u.id));
+             return [...prev, ...filteredNew];
+           });
+         }
+       }).catch(() => {});
     }
   }, []);
 
@@ -487,7 +504,13 @@ function OppForm({ opp, onSave, onCancel }: any) {
                <FormInput label="Success Probability (%)" name="probability" type="number" defaultValue={isEdit ? opp.probability : 10} required />
                <FormInput label="Expected Close Date" name="closeDate" type="date" defaultValue={isEdit ? opp.closeDate.split('T')[0] : ''} required />
                <FormSelect label="Stage" name="stage" options={['Lead', 'Qualified', 'Need Analysis', 'Proposal', 'Negotiation', 'Quotation Submitted', 'Pending Approval', 'Won', 'Lost']} defaultValue={isEdit ? opp.stage : 'Lead'} required />
-               <FormSelect label="Sales Rep" name="salesRep" options={['Wiriya S.', 'ธนพล คำดี (S03)', 'Pimjai K.']} defaultValue={isEdit ? opp.salesRep : 'Wiriya S.'} required />
+               <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Sales Rep <span className="text-rose-500">*</span></label>
+                  <select name="salesRep" required defaultValue={isEdit ? opp.salesRep : ''} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled>Select Sales Rep...</option>
+                    {users.map(u => <option key={u.id} value={u.id}>{u.fullname} ({u.role})</option>)}
+                  </select>
+               </div>
             </div>
          </section>
 

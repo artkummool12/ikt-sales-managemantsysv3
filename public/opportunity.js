@@ -269,8 +269,45 @@ async function loadCustomersToDropdown() {
   }
 }
 
+async function loadSalespersonsToDropdown() {
+  try {
+    const users = await SupabaseDB.getUsers();
+    const select = document.getElementById('opp-salesperson');
+    if (!select) return;
+
+    select.innerHTML = '<option value="" disabled selected>-- Please select Sales Owner --</option>';
+    
+    // Add real users from users DB
+    users.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.innerText = `${u.fullname} (${u.role})`;
+      select.appendChild(opt);
+    });
+
+    // Fallbacks for older data/demo reps if not already added
+    const legacyReps = [
+      { id: "Ekachai Wongdee (S01)", fullname: "Ekachai Wongdee", role: "Sales Rep (S01)" },
+      { id: "Suchada Lertviriya (S02)", fullname: "Suchada Lertviriya", role: "Sales Rep (S02)" },
+      { id: "Thanapol Khamdee (S03)", fullname: "Thanapol Khamdee", role: "Sales Rep (S03)" },
+      { id: "Thanaphol Khamdee (S03)", fullname: "Thanaphol Khamdee", role: "Sales Rep (S03)" }
+    ];
+    legacyReps.forEach(rep => {
+      if (!users.some(u => u.id === rep.id || u.fullname === rep.fullname)) {
+        const opt = document.createElement('option');
+        opt.value = rep.id;
+        opt.innerText = `${rep.fullname} (${rep.role})`;
+        select.appendChild(opt);
+      }
+    });
+  } catch (err) {
+    console.error("Dropdown salesperson injection failed", err);
+  }
+}
+
 async function openOpportunityModal(id = "") {
   await loadCustomersToDropdown();
+  await loadSalespersonsToDropdown();
 
   // Initialize Bootstrap modal if not already
   if (!opportunityModalInstance) {
