@@ -156,6 +156,8 @@ export interface Quotation {
   total_value?: number;
   attention?: string;
   cc?: string;
+  customer_phone?: string;
+  customer_email?: string;
 }
 
 export interface SalesOrder {

@@ -611,6 +611,53 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
       : [{ id: "0", desc: "", qty: 1, duration_days: 1, unit: "Set", rate: 0 }],
   );
 
+  const [selectedCustomerId, setSelectedCustomerId] = useState(
+    initialQuote?.customer_id || ""
+  );
+  const [attention, setAttention] = useState(
+    initialQuote?.attention || ""
+  );
+  const [customerPhone, setCustomerPhone] = useState(
+    initialQuote?.customer_phone || ""
+  );
+  const [customerEmail, setCustomerEmail] = useState(
+    initialQuote?.customer_email || ""
+  );
+
+  const selectedCust = customers.find((c: any) => c.id === selectedCustomerId);
+
+  const handleCustomerChange = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    const cust = customers.find((c: any) => c.id === customerId);
+    if (cust) {
+      if (cust.contacts && cust.contacts.length > 0) {
+        const firstContact = cust.contacts[0];
+        setAttention(firstContact.contact_name);
+        setCustomerPhone(firstContact.phone || cust.phone || "");
+        setCustomerEmail(firstContact.email || cust.email || "");
+      } else {
+        setAttention("");
+        setCustomerPhone(cust.phone || "");
+        setCustomerEmail(cust.email || "");
+      }
+    } else {
+      setAttention("");
+      setCustomerPhone("");
+      setCustomerEmail("");
+    }
+  };
+
+  const handleContactChange = (contactIdx: string) => {
+    if (contactIdx === "") return;
+    const idx = parseInt(contactIdx, 10);
+    if (selectedCust && selectedCust.contacts && selectedCust.contacts[idx]) {
+      const contact = selectedCust.contacts[idx];
+      setAttention(contact.contact_name);
+      setCustomerPhone(contact.phone || selectedCust.phone || "");
+      setCustomerEmail(contact.email || selectedCust.email || "");
+    }
+  };
+
   const calculateTotal = () =>
     items.reduce((acc, i) => acc + i.qty * i.duration_days * i.rate, 0);
 
@@ -664,8 +711,8 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
       title: fd.get("title"),
       customer_id: customerId,
       customer_name: selectedCust?.customer_name || "",
-      customer_phone: selectedCust?.phone || "",
-      customer_email: selectedCust?.email || "",
+      customer_phone: fd.get("customer_phone") || selectedCust?.phone || "",
+      customer_email: fd.get("customer_email") || selectedCust?.email || "",
       attention: fd.get("attention") || "",
       cc: fd.get("cc") || "",
       quotation_date: fd.get("date"),
@@ -741,7 +788,8 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
             <select
               name="customer"
               required
-              defaultValue={initialQuote?.customer_id}
+              value={selectedCustomerId}
+              onChange={(e) => handleCustomerChange(e.target.value)}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50"
             >
               <option value="">-- Select Customer --</option>
@@ -752,6 +800,27 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
               ))}
             </select>
           </div>
+
+          {selectedCust?.contacts && selectedCust.contacts.length > 0 && (
+            <div>
+              <label className="block text-sm font-bold text-indigo-600 mb-1.5 flex items-center gap-1">
+                <span>เลือกผู้ติดต่อ (Select Contact Person)</span>
+              </label>
+              <select
+                onChange={(e) => handleContactChange(e.target.value)}
+                defaultValue=""
+                className="w-full px-3 py-2 border border-indigo-200 rounded-lg text-sm bg-indigo-50/50 text-indigo-900 font-medium focus:ring-2 focus:ring-indigo-500/20"
+              >
+                <option value="">-- ดึงข้อมูลจากทะเบียนรายชื่อผู้ติดต่อ --</option>
+                {selectedCust.contacts.map((contact: any, index: number) => (
+                  <option key={index} value={index}>
+                    {contact.contact_name} ({contact.position || "N/A"})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-1.5">
               Attention (Attn)
@@ -759,9 +828,38 @@ function QuoteForm({ id, onClose, quotations, customers }: any) {
             <input
               type="text"
               name="attention"
-              defaultValue={initialQuote?.attention}
+              value={attention}
+              onChange={(e) => setAttention(e.target.value)}
               placeholder="e.g. Khun Sawit Kong-ngoen"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 font-medium"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1.5">
+              Direct Phone (Tel)
+            </label>
+            <input
+              type="text"
+              name="customer_phone"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              placeholder="e.g. +66(0)93-296-9151"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 font-medium"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1.5">
+              Direct Email (Email)
+            </label>
+            <input
+              type="text"
+              name="customer_email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              placeholder="e.g. sawit.k@stpi.co.th"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 font-medium"
             />
           </div>
           <div>
@@ -1216,11 +1314,11 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
 
             <div className="font-semibold text-slate-800">Tel</div>
             <div className="text-slate-600">:</div>
-            <div className="text-black">{customer?.phone || "+66(0)93-296-9151"}</div>
+            <div className="text-black">{quote.customer_phone || customer?.contacts?.[0]?.phone || customer?.phone || "+66(0)93-296-9151"}</div>
 
             <div className="font-semibold text-slate-800">Email</div>
             <div className="text-slate-600">:</div>
-            <div className="text-black break-all">{customer?.email || "sawit.k@stpi.co.th"}</div>
+            <div className="text-black break-all">{quote.customer_email || customer?.contacts?.[0]?.email || customer?.email || "sawit.k@stpi.co.th"}</div>
           </div>
 
           {/* Right side Grid */}

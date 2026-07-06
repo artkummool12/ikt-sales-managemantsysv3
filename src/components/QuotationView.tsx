@@ -52,6 +52,9 @@ export default function QuotationView({
   });
   const [remarks, setRemarks] = useState('');
   const [status, setStatus] = useState<'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Expired'>('Draft');
+  const [attention, setAttention] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
 
   const canModify = currentRole !== 'Management';
   const canDelete = currentRole === 'Admin' || currentRole === 'System Administrator';
@@ -79,6 +82,9 @@ export default function QuotationView({
     setValidUntil(d.toISOString().split('T')[0]);
     setRemarks('');
     setStatus('Draft');
+    setAttention('');
+    setCustomerPhone('');
+    setCustomerEmail('');
     setIsFormOpen(true);
   };
 
@@ -92,7 +98,43 @@ export default function QuotationView({
     setValidUntil(q.valid_until);
     setRemarks(q.remarks || '');
     setStatus(q.status);
+    setAttention(q.attention || '');
+    setCustomerPhone(q.customer_phone || '');
+    setCustomerEmail(q.customer_email || '');
     setIsFormOpen(true);
+  };
+
+  const handleCustChange = (customerId: string) => {
+    setCustId(customerId);
+    const cust = customers.find(c => c.id === customerId);
+    if (cust) {
+      if (cust.contacts && cust.contacts.length > 0) {
+        const firstContact = cust.contacts[0];
+        setAttention(firstContact.contact_name);
+        setCustomerPhone(firstContact.phone || cust.phone || "");
+        setCustomerEmail(firstContact.email || cust.email || "");
+      } else {
+        setAttention("");
+        setCustomerPhone(cust.phone || "");
+        setCustomerEmail(cust.email || "");
+      }
+    } else {
+      setAttention("");
+      setCustomerPhone("");
+      setCustomerEmail("");
+    }
+  };
+
+  const handleContactChange = (contactIndexStr: string) => {
+    if (contactIndexStr === "") return;
+    const index = parseInt(contactIndexStr, 10);
+    const cust = customers.find(c => c.id === custId);
+    if (cust && cust.contacts && cust.contacts[index]) {
+      const contact = cust.contacts[index];
+      setAttention(contact.contact_name);
+      setCustomerPhone(contact.phone || cust.phone || "");
+      setCustomerEmail(contact.email || cust.email || "");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -115,7 +157,10 @@ export default function QuotationView({
       status,
       issue_date: issueDate,
       valid_until: validUntil,
-      remarks
+      remarks,
+      attention,
+      customer_phone: customerPhone,
+      customer_email: customerEmail,
     };
 
     try {
@@ -415,7 +460,7 @@ export default function QuotationView({
                   <label className="block text-xs font-bold text-slate-500 mb-1.5">ลูกค้าองค์กรผู้รับบริการ *</label>
                   <select
                     value={custId}
-                    onChange={(e) => setCustId(e.target.value)}
+                    onChange={(e) => handleCustChange(e.target.value)}
                     required
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
@@ -424,6 +469,65 @@ export default function QuotationView({
                       <option key={c.id} value={c.id}>{c.customer_name}</option>
                     ))}
                   </select>
+                </div>
+
+                {(() => {
+                  const selectedCustObj = customers.find(c => c.id === custId);
+                  if (selectedCustObj?.contacts && selectedCustObj.contacts.length > 0) {
+                    return (
+                      <div>
+                        <label className="block text-xs font-bold text-indigo-600 mb-1.5 flex items-center gap-1">
+                          <span>เลือกผู้ติดต่อ (Select Contact Person)</span>
+                        </label>
+                        <select
+                          onChange={(e) => handleContactChange(e.target.value)}
+                          defaultValue=""
+                          className="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-3 py-2 text-sm text-indigo-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        >
+                          <option value="">-- ดึงข้อมูลจากทะเบียนรายชื่อผู้ติดต่อ --</option>
+                          {selectedCustObj.contacts.map((contact: any, index: number) => (
+                            <option key={index} value={index}>
+                              {contact.contact_name} ({contact.position || "N/A"})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5">Attention (Attn)</label>
+                  <input
+                    type="text"
+                    value={attention}
+                    onChange={(e) => setAttention(e.target.value)}
+                    placeholder="e.g. Khun Sawit Kong-ngoen"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5">Direct Phone (Tel)</label>
+                  <input
+                    type="text"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="e.g. +66(0)93-296-9151"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5">Direct Email (Email)</label>
+                  <input
+                    type="text"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="e.g. sawit.k@stpi.co.th"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium"
+                  />
                 </div>
 
                 <div className="col-span-1 md:col-span-2">
@@ -525,7 +629,7 @@ export default function QuotationView({
       {/* Professional Printed Template Preview Modal */}
       {viewingQuote && (() => {
         const clientObj = customers.find(c => c.id === viewingQuote.customer_id);
-        const attentionName = clientObj?.contacts?.[0]?.contact_name || "Khun Sawit Kong-ngoen";
+        const attentionName = viewingQuote.attention || clientObj?.contacts?.[0]?.contact_name || "Khun Sawit Kong-ngoen";
         const printItems = (viewingQuote.items && viewingQuote.items.length > 0)
           ? viewingQuote.items
           : [{
@@ -697,11 +801,11 @@ export default function QuotationView({
 
                     <div className="font-semibold text-slate-800">Tel</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black">{clientObj?.phone || viewingQuote.customer_phone || "+66(0)93-296-9151"}</div>
+                    <div className="text-black">{viewingQuote.customer_phone || clientObj?.contacts?.[0]?.phone || clientObj?.phone || "+66(0)93-296-9151"}</div>
 
                     <div className="font-semibold text-slate-800">Email</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black break-all">{clientObj?.email || viewingQuote.customer_email || "sawit.k@stpi.co.th"}</div>
+                    <div className="text-black break-all">{viewingQuote.customer_email || clientObj?.contacts?.[0]?.email || clientObj?.email || "sawit.k@stpi.co.th"}</div>
 
                     {/* Spacer */}
                     <div className="col-span-3 h-1"></div>
