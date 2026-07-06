@@ -272,7 +272,7 @@ export default function QuotationManagement() {
                   </span>
                 </div>
                 <div className="h-[140px] flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={1} minWidth={1}>
                     <PieChart>
                       <Pie
                         data={statusData}

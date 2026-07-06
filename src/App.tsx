@@ -420,7 +420,7 @@ export default function App() {
       items: [...quoteItems]
     };
 
-    setQuotations([newQuote, ...quotations]);
+    setQuotations(prevQuotations => [newQuote, ...prevQuotations]);
 
     const newLog: AuditLogSim = {
       id: auditLogs.length + 1,
@@ -431,7 +431,7 @@ export default function App() {
       details: `ออกใบเสนอราคาเลขที่ ${qNo} เรื่อง: "${quoteForm.title}" ยอดสุทธิ ฿${grand.toLocaleString()}`,
       target_type: 'quotation'
     };
-    setAuditLogs([newLog, ...auditLogs]);
+    setAuditLogs(prevLogs => [newLog, ...prevLogs]);
 
     setShowQuotationModal(false);
     showSimToast(`สร้างใบเสนอราคาเลขที่ "${qNo}" เรียบร้อยแล้ว!`, 'success');
@@ -1319,8 +1319,7 @@ export default function App() {
                                     {(q.status === 'Sent' || q.status === 'Draft') && (
                                       <button 
                                         onClick={() => {
-                                          const updated = quotations.map(item => item.id === q.id ? { ...item, status: 'Approved' as const } : item);
-                                          setQuotations(updated);
+                                          setQuotations(prevQuotations => prevQuotations.map(item => item.id === q.id ? { ...item, status: 'Approved' } : item));
                                           showSimToast(`อนุมัติใบเสนอราคา ${q.quotation_no} สำเร็จเรียบร้อย!`, 'success');
                                           // add log
                                           const newLog: AuditLogSim = {
@@ -1332,7 +1331,7 @@ export default function App() {
                                             details: `อนุมัติข้อเสนอใบเสนอราคาเลขที่ ${q.quotation_no} มูลค่า ฿${q.grand_total.toLocaleString()}`,
                                             target_type: 'quotation'
                                           };
-                                          setAuditLogs([newLog, ...auditLogs]);
+                                          setAuditLogs(prevLogs => [newLog, ...prevLogs]);
                                         }}
                                         title="อนุมัติใบเสนอราคา"
                                         className="p-1.5 bg-emerald-950 hover:bg-emerald-900 hover:text-white text-emerald-400 rounded-lg transition-all border border-emerald-900 cursor-pointer"
@@ -1345,8 +1344,7 @@ export default function App() {
                                     {(q.status === 'Sent' || q.status === 'Draft') && (
                                       <button 
                                         onClick={() => {
-                                          const updated = quotations.map(item => item.id === q.id ? { ...item, status: 'Rejected' as const } : item);
-                                          setQuotations(updated);
+                                          setQuotations(prevQuotations => prevQuotations.map(item => item.id === q.id ? { ...item, status: 'Rejected' } : item));
                                           showSimToast(`ปฏิเสธข้อเสนอใบเสนอราคา ${q.quotation_no} เรียบร้อย`, 'info');
                                           // add log
                                           const newLog: AuditLogSim = {
@@ -1358,7 +1356,7 @@ export default function App() {
                                             details: `ทำเรื่องปฏิเสธใบเสนอราคาเลขที่ ${q.quotation_no} สำหรับดีลลูกค้า ${q.customer_name}`,
                                             target_type: 'quotation'
                                           };
-                                          setAuditLogs([newLog, ...auditLogs]);
+                                          setAuditLogs(prevLogs => [newLog, ...prevLogs]);
                                         }}
                                         title="ปฏิเสธใบเสนอราคา"
                                         className="p-1.5 bg-rose-950 hover:bg-rose-900 hover:text-white text-rose-400 rounded-lg transition-all border border-rose-900 cursor-pointer"
@@ -1371,8 +1369,7 @@ export default function App() {
                                     <button 
                                       onClick={() => {
                                         if (confirm(`คุณต้องการลบเอกสารใบเสนอราคา ${q.quotation_no} ใช่หรือไม่?`)) {
-                                          const updated = quotations.filter(item => item.id !== q.id);
-                                          setQuotations(updated);
+                                          setQuotations(prevQuotations => prevQuotations.filter(item => item.id !== q.id));
                                           showSimToast(`ลบใบเสนอราคา ${q.quotation_no} สำเร็จ`, 'info');
                                           // add log
                                           const newLog: AuditLogSim = {
@@ -1384,7 +1381,7 @@ export default function App() {
                                             details: `ลบข้อมูลใบเสนอราคาเลขที่ ${q.quotation_no} ออกจากระบบถาวร`,
                                             target_type: 'quotation'
                                           };
-                                          setAuditLogs([newLog, ...auditLogs]);
+                                          setAuditLogs(prevLogs => [newLog, ...prevLogs]);
                                         }
                                       }}
                                       title="ลบเอกสาร"
@@ -1502,7 +1499,7 @@ export default function App() {
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                         <h3 className="text-sm font-black text-white mb-4"><i className="fas fa-chart-pie text-indigo-400 me-1.5"></i> สัดส่วนบริการ (Service Segment Share)</h3>
                         <div className="h-64 flex items-center justify-center">
-                          <ResponsiveContainer width="100%" height="100%">
+                          <ResponsiveContainer width="100%" height="100%" minHeight={1} minWidth={1}>
                             <PieChart>
                               <Pie
                                 data={[
@@ -1532,7 +1529,7 @@ export default function App() {
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                         <h3 className="text-sm font-black text-white mb-4"><i className="fas fa-chart-bar text-emerald-400 me-1.5"></i> สรุปดีลประมูลงานขายรวมแยกขั้นปัจจุบัน (Opportunity Value by Stage)</h3>
                         <div className="h-64">
-                          <ResponsiveContainer width="100%" height="100%">
+                          <ResponsiveContainer width="100%" height="100%" minHeight={1} minWidth={1}>
                             <BarChart
                               data={['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'].map(stage => ({
                                 name: stage,

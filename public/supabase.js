@@ -637,6 +637,70 @@ function clearSupabaseCaches() {
   _quotationsCacheTime = 0;
 }
 
+const TABLE_COLUMNS = {
+  customers: [
+    'id', 'customer_code', 'customer_name', 'tax_id', 'industry_type',
+    'address', 'phone', 'email', 'payment_term', 'status', 'contacts', 'created_at'
+  ],
+  customer_contacts: [
+    'id', 'customer_id', 'contact_name', 'position', 'phone', 'email', 'created_at'
+  ],
+  opportunities: [
+    'id', 'opportunity_no', 'customer_id', 'project_name', 'service_type',
+    'lead_source', 'estimated_value', 'success_probability', 'expected_close_date',
+    'sales_person_id', 'status', 'remarks', 'created_at'
+  ],
+  quotations: [
+    'id', 'quotation_no', 'customer_id', 'opportunity_id', 'title',
+    'quotation_date', 'validity_days', 'payment_term', 'status', 'sales_person',
+    'items', 'total_value', 'tax_rate', 'grand_total', 'terms_conditions', 'remarks',
+    'revision_number', 'created_at'
+  ],
+  invoices: [
+    'id', 'invoice_no', 'customer_id', 'quotation_no', 'po_reference',
+    'project_name', 'invoice_date', 'due_date', 'status', 'sales_person',
+    'items', 'total_value', 'tax_rate', 'grand_total', 'remarks', 'created_at'
+  ],
+  users: [
+    'id', 'username', 'fullname', 'email', 'role', 'status', 'password', 'created_at'
+  ],
+  audit_logs: [
+    'id', 'user_id', 'action', 'target_type', 'target_id', 'details', 'created_at'
+  ]
+};
+
+const UUID_FIELDS = ['id', 'customer_id', 'opportunity_id', 'user_id'];
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUUID(val) {
+  return typeof val === 'string' && UUID_REGEX.test(val);
+}
+
+function sanitizePayload(tableName, rawPayload) {
+  const allowed = TABLE_COLUMNS[tableName];
+  if (!allowed) return { ...rawPayload };
+
+  const sanitized = {};
+  for (const key of allowed) {
+    if (rawPayload[key] !== undefined) {
+      let val = rawPayload[key];
+      
+      // If it's a UUID field, check if it's a valid UUID. If not, map to null
+      if (UUID_FIELDS.includes(key)) {
+        if (val === null || val === undefined || val === '') {
+          val = null;
+        } else if (!isValidUUID(val)) {
+          console.warn(`Field ${key} has invalid UUID format: "${val}". Setting to null.`);
+          val = null;
+        }
+      }
+      
+      sanitized[key] = val;
+    }
+  }
+  return sanitized;
+}
+
 const SupabaseDB = {
   // Test connection to cloud database
   async testConnection() {
@@ -708,6 +772,10 @@ const SupabaseDB = {
     }
   },
 
+  async createCustomer(customerData) {
+    return this.addCustomer(customerData);
+  },
+
   async addCustomer(customerData) {
     clearSupabaseCaches();
     const customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
@@ -749,19 +817,21 @@ const SupabaseDB = {
     const isCloud = await this.testConnection();
     if (isCloud) {
       try {
+        const dbPayload = sanitizePayload('customers', newCustomer);
         const response = await restRequest('/customers', {
           method: 'POST',
           headers: { 'Prefer': 'return=representation' },
-          body: JSON.stringify(newCustomer)
+          body: JSON.stringify(dbPayload)
         });
         
         // Save contacts to cloud if table exists
         if (formattedContacts.length > 0) {
           for (const con of formattedContacts) {
             try {
+              const conPayload = sanitizePayload('customer_contacts', con);
               await restRequest('/customer_contacts', {
                 method: 'POST',
-                body: JSON.stringify(con)
+                body: JSON.stringify(conPayload)
               });
             } catch (err) {
               console.warn("Could not insert contact on cloud", err);
@@ -806,9 +876,11 @@ const SupabaseDB = {
         try {
           const body = { ...updates };
           delete body.contacts;
+          const dbPayload = sanitizePayload('customers', body);
+          delete dbPayload.id; // Don't PATCH primary key
           await restRequest(`/customers?id=eq.${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(body)
+            body: JSON.stringify(dbPayload)
           });
 
           if (updates.contacts) {
@@ -822,9 +894,10 @@ const SupabaseDB = {
                   phone: con.phone,
                   email: con.email
                 };
+                const conPayload = sanitizePayload('customer_contacts', conBody);
                 await restRequest('/customer_contacts', {
                   method: 'POST',
-                  body: JSON.stringify(conBody)
+                  body: JSON.stringify(conPayload)
                 });
               }
             } catch (conErr) {
@@ -955,12 +1028,11 @@ const SupabaseDB = {
     const isCloud = await this.testConnection();
     if (isCloud) {
       try {
-        const cloudPayload = { ...newOpp };
-        delete cloudPayload.customer; // Strip circular relation database
+        const dbPayload = sanitizePayload('opportunities', newOpp);
         const response = await restRequest('/opportunities', {
           method: 'POST',
           headers: { 'Prefer': 'return=representation' },
-          body: JSON.stringify(cloudPayload)
+          body: JSON.stringify(dbPayload)
         });
         return response ? response[0] : newOpp;
       } catch (err) {
@@ -988,11 +1060,11 @@ const SupabaseDB = {
       const isCloud = await this.testConnection();
       if (isCloud) {
         try {
-          const cloudPayload = { ...updatedOpp };
-          delete cloudPayload.customer; // Strip circular database info
+          const dbPayload = sanitizePayload('opportunities', updatedOpp);
+          delete dbPayload.id; // Don't PATCH primary key
           await restRequest(`/opportunities?id=eq.${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(cloudPayload)
+            body: JSON.stringify(dbPayload)
           });
         } catch (e) {
           console.warn("Cloud PATCH failed, synced locally", e);
@@ -1047,6 +1119,12 @@ const SupabaseDB = {
           let delivery_plan = q.delivery_plan || '';
           let version = q.version || 'v1.0';
           let remarks = q.remarks || '';
+          let customer_phone = q.customer_phone || '';
+          let customer_email = q.customer_email || '';
+          let attention = q.attention || '';
+          let cc = q.cc || '';
+          let created_by = q.created_by || '';
+          let updated_by = q.updated_by || '';
 
           if (q.remarks && q.remarks.trim().startsWith('{')) {
             try {
@@ -1058,6 +1136,12 @@ const SupabaseDB = {
                 delivery_plan = meta.delivery_plan || delivery_plan;
                 version = meta.version || version;
                 remarks = meta.remarks || '';
+                customer_phone = meta.customer_phone || customer_phone;
+                customer_email = meta.customer_email || customer_email;
+                attention = meta.attention || attention;
+                cc = meta.cc || cc;
+                created_by = meta.created_by || created_by;
+                updated_by = meta.updated_by || updated_by;
               }
             } catch (e) {}
           }
@@ -1070,6 +1154,12 @@ const SupabaseDB = {
             delivery_plan,
             version,
             remarks,
+            customer_phone,
+            customer_email,
+            attention,
+            cc,
+            created_by,
+            updated_by,
             customer: custMap.get(q.customer_id),
             opportunity: oppMap.get(q.opportunity_id)
           };
@@ -1090,6 +1180,12 @@ const SupabaseDB = {
       let delivery_plan = q.delivery_plan || '';
       let version = q.version || 'v1.0';
       let remarks = q.remarks || '';
+      let customer_phone = q.customer_phone || '';
+      let customer_email = q.customer_email || '';
+      let attention = q.attention || '';
+      let cc = q.cc || '';
+      let created_by = q.created_by || '';
+      let updated_by = q.updated_by || '';
 
       if (q.remarks && q.remarks.trim().startsWith('{')) {
         try {
@@ -1101,6 +1197,12 @@ const SupabaseDB = {
             delivery_plan = meta.delivery_plan || delivery_plan;
             version = meta.version || version;
             remarks = meta.remarks || '';
+            customer_phone = meta.customer_phone || customer_phone;
+            customer_email = meta.customer_email || customer_email;
+            attention = meta.attention || attention;
+            cc = meta.cc || cc;
+            created_by = meta.created_by || created_by;
+            updated_by = meta.updated_by || updated_by;
           }
         } catch (e) {}
       }
@@ -1113,6 +1215,12 @@ const SupabaseDB = {
         delivery_plan,
         version,
         remarks,
+        customer_phone,
+        customer_email,
+        attention,
+        cc,
+        created_by,
+        updated_by,
         customer: custMap.get(q.customer_id),
         opportunity: oppMap.get(q.opportunity_id)
       };
@@ -1179,18 +1287,18 @@ const SupabaseDB = {
            job_no: newQuote.job_no || '',
            po_no: newQuote.po_no || '',
            delivery_plan: newQuote.delivery_plan || '',
-           version: newQuote.version || ''
+           version: newQuote.version || '',
+           customer_phone: newQuote.customer_phone || '',
+           customer_email: newQuote.customer_email || '',
+           attention: newQuote.attention || '',
+           cc: newQuote.cc || '',
+           created_by: newQuote.created_by || '',
+           updated_by: newQuote.updated_by || ''
          });
-         delete dbPayload.project_name;
-         delete dbPayload.job_no;
-         delete dbPayload.po_no;
-         delete dbPayload.delivery_plan;
-         delete dbPayload.version;
-         delete dbPayload.customer;
-         delete dbPayload.customer_name;
+         const sanitized = sanitizePayload('quotations', dbPayload);
          await restRequest('/quotations', {
            method: 'POST',
-           body: JSON.stringify(dbPayload)
+           body: JSON.stringify(sanitized)
          });
        } catch (err) {
          console.warn("Cloud addQuotation failed, completed locally", err);
@@ -1245,18 +1353,19 @@ const SupabaseDB = {
             job_no: updatedQuote.job_no || '',
             po_no: updatedQuote.po_no || '',
             delivery_plan: updatedQuote.delivery_plan || '',
-            version: updatedQuote.version || ''
+            version: updatedQuote.version || '',
+            customer_phone: updatedQuote.customer_phone || '',
+            customer_email: updatedQuote.customer_email || '',
+            attention: updatedQuote.attention || '',
+            cc: updatedQuote.cc || '',
+            created_by: updatedQuote.created_by || '',
+            updated_by: updatedQuote.updated_by || ''
           });
-          delete dbPayload.project_name;
-          delete dbPayload.job_no;
-          delete dbPayload.po_no;
-          delete dbPayload.delivery_plan;
-          delete dbPayload.version;
-          delete dbPayload.customer;
-          delete dbPayload.customer_name;
+          const sanitized = sanitizePayload('quotations', dbPayload);
+          delete sanitized.id; // Don't PATCH primary key
           await restRequest(`/quotations?id=eq.${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(dbPayload)
+            body: JSON.stringify(sanitized)
           });
         } catch (e) {
           console.warn("Cloud updateQuotation failed, completed locally", e);
@@ -1408,13 +1517,10 @@ const SupabaseDB = {
            ikm_inv: newInv.ikm_inv || '',
            job_no: newInv.job_no || ''
          });
-         delete dbPayload.ikm_inv;
-         delete dbPayload.job_no;
-         delete dbPayload.customer;
-         delete dbPayload.customer_name;
+         const sanitized = sanitizePayload('invoices', dbPayload);
          await restRequest('/invoices', {
            method: 'POST',
-           body: JSON.stringify(dbPayload)
+           body: JSON.stringify(sanitized)
          });
        } catch (err) {
          console.warn("Cloud addInvoice failed, completed locally", err);
@@ -1450,13 +1556,11 @@ const SupabaseDB = {
             ikm_inv: updatedInv.ikm_inv || '',
             job_no: updatedInv.job_no || ''
           });
-          delete dbPayload.ikm_inv;
-          delete dbPayload.job_no;
-          delete dbPayload.customer;
-          delete dbPayload.customer_name;
+          const sanitized = sanitizePayload('invoices', dbPayload);
+          delete sanitized.id; // Don't PATCH primary key
           await restRequest(`/invoices?id=eq.${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(dbPayload)
+            body: JSON.stringify(sanitized)
           });
         } catch (e) {
           console.warn("Cloud updateInvoice failed, completed locally", e);

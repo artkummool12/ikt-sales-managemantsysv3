@@ -134,7 +134,7 @@ export default function ExecutiveDashboard({ customers = [], opportunities = [],
           </ChartCard>
 
           <ChartCard title="Annual Sales Trend (YoY)">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} minHeight={1} minWidth={1}>
               <AreaChart data={mockAnnualTrend}>
                 <defs>
                   <linearGradient id="colorCurrent" x1="0" y1="0" x2="0" y2="1">
@@ -186,7 +186,7 @@ export default function ExecutiveDashboard({ customers = [], opportunities = [],
           </div>
           <div className="lg:col-span-1">
              <ChartCard title="Project execution Status">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} minHeight={1} minWidth={1}>
                 <PieChart>
                   <Pie
                     data={mockProjectStatus}

@@ -2439,6 +2439,7 @@ export const CRMService = {
         const payload = { ...prepared };
         delete (payload as any).customer;
         delete (payload as any).customer_name;
+        delete (payload as any).opportunity;
         await apiFetch('/quotations', { method: 'POST', body: JSON.stringify(payload) });
       } catch (err: any) {
         console.warn('Cloud insertQuotation failed', err);
@@ -2467,6 +2468,7 @@ export const CRMService = {
         const payload = { ...updates };
         delete (payload as any).customer;
         delete (payload as any).customer_name;
+        delete (payload as any).opportunity;
         await apiFetch(`/quotations?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
       } catch (err: any) {
         console.warn('Cloud updateQuotation failed', err);
