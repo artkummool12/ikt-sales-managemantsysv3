@@ -1135,13 +1135,18 @@ const SupabaseDB = {
     const qDate = quoteData.quotation_date || new Date().toISOString().slice(0, 10);
     const yr = qDate.split('-')[0].slice(-2); // e.g. "26"
 
-    let seq = 1;
+    let seq = 4241;
     if (quotes.length > 0) {
       const seqs = quotes.map(q => {
         const match = q.quotation_no.match(/^QT-(\d{4})-\d{2}/);
         return match ? parseInt(match[1], 10) : 0;
       });
-      seq = Math.max(...seqs, 0) + 1;
+      const validSeqs = seqs.filter(s => s >= 4241);
+      if (validSeqs.length > 0) {
+        seq = Math.max(...validSeqs, 0) + 1;
+      } else {
+        seq = 4241;
+      }
     }
     const nextCode = `QT-${String(seq).padStart(4, '0')}-${yr}`;
     const newId = crypto.randomUUID();

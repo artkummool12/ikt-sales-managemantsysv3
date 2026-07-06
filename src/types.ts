@@ -139,13 +139,23 @@ export interface Quotation {
   total_amount: number;
   vat_amount: number;
   grand_total: number;
-  status: 'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Expired';
+  status: 'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Expired' | 'Invoiced';
   issue_date: string;
   valid_until: string;
   created_at: string;
   remarks?: string;
   customer_name?: string;
   items?: QuotationItem[];
+  title?: string;
+  quotation_date?: string;
+  validity_days?: number;
+  payment_term?: string;
+  sales_person?: string;
+  revision_number?: number;
+  terms_conditions?: string;
+  total_value?: number;
+  attention?: string;
+  cc?: string;
 }
 
 export interface SalesOrder {

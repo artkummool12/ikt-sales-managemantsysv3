@@ -650,16 +650,16 @@ export default function QuotationView({
                   }
                 `}</style>
 
-                {/* Elegant Header with Logo & Brand details */}
-                <div className="flex justify-between items-start mb-2">
+                 {/* Elegant Header with Logo & Brand details */}
+                <div className="flex justify-between items-start mb-1.5">
                   <div className="flex-1 pr-6 text-left">
                     <div className="text-[14px] font-bold uppercase tracking-wide" style={{ color: themeColor !== "#1e293b" ? themeColor : "black" }}>
                       IKM TESTING (THAILAND) CO., LTD.
                     </div>
-                    <div className="text-[10px] leading-relaxed text-slate-700 mt-1">
-                      <p>155/167 Moo 5, Samnakthon Sub-district, Banchang District, Rayong Province</p>
-                      <p>Thailand 21130</p>
-                      <p className="mt-1">Tel : + 66 38 601 996 to 8</p>
+                    <div className="text-[10px] text-slate-700 font-medium leading-tight space-y-0" style={{ lineHeight: '1.1' }}>
+                      <div className="m-0 p-0">155/167 Moo 5, Samnakthon Sub-district, Banchang District, Rayong Province</div>
+                      <div className="m-0 p-0">Thailand 21130</div>
+                      <div className="m-0 p-0">Tel : + 66 38 601 996 to 8</div>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
@@ -674,22 +674,22 @@ export default function QuotationView({
                 </div>
 
                 {/* Thick solid black divider line */}
-                <div className="border-b-2 border-black mb-3"></div>
+                <div className="border-b-2 border-black mb-2"></div>
 
                 {/* Centered Document Title */}
-                <div className="text-center mb-4">
+                <div className="text-center mb-2">
                   <h2 className="font-bold tracking-[0.25em] text-black" style={{ fontSize: titleSize }}>
                     QUOTATION
                   </h2>
                 </div>
 
                 {/* Two Column Customer Info & Quotation Metadata Cards */}
-                <div className="grid grid-cols-2 gap-8 text-[11px] mb-4 text-left">
+                <div className="grid grid-cols-2 gap-8 text-[11px] mb-1 text-left">
                   {/* Left side Grid */}
-                  <div className="grid grid-cols-[55px_15px_1fr] gap-y-1 align-start">
+                  <div className="grid grid-cols-[55px_15px_1fr] gap-y-0.5 align-start">
                     <div className="font-semibold text-slate-800">To</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black font-medium">{clientObj?.customer_name || viewingQuote.customer_name || "STP&I Company Limited"}</div>
+                    <div className="text-black font-semibold">{clientObj?.customer_name || viewingQuote.customer_name || "STP&I Company Limited"}</div>
 
                     <div className="font-semibold text-slate-800">Attn</div>
                     <div className="text-slate-600">:</div>
@@ -697,14 +697,14 @@ export default function QuotationView({
 
                     <div className="font-semibold text-slate-800">Tel</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black">{clientObj?.phone || "+66(0)93-296-9151"}</div>
+                    <div className="text-black">{clientObj?.phone || viewingQuote.customer_phone || "+66(0)93-296-9151"}</div>
 
                     <div className="font-semibold text-slate-800">Email</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black break-all">{clientObj?.email || "sawit.k@stpi.co.th"}</div>
+                    <div className="text-black break-all">{clientObj?.email || viewingQuote.customer_email || "sawit.k@stpi.co.th"}</div>
 
                     {/* Spacer */}
-                    <div className="col-span-3 h-2"></div>
+                    <div className="col-span-3 h-1"></div>
 
                     <div className="font-semibold text-slate-800">From</div>
                     <div className="text-slate-600">:</div>
@@ -712,7 +712,7 @@ export default function QuotationView({
 
                     <div className="font-semibold text-slate-800">CC</div>
                     <div className="text-slate-600">:</div>
-                    <div className="text-black">-</div>
+                    <div className="text-black">{viewingQuote.cc || "-"}</div>
 
                     <div className="font-semibold text-slate-800">Subject</div>
                     <div className="text-slate-600">:</div>
@@ -720,7 +720,7 @@ export default function QuotationView({
                   </div>
 
                   {/* Right side Grid */}
-                  <div className="grid grid-cols-[80px_15px_1fr] gap-y-1 align-start">
+                  <div className="grid grid-cols-[80px_15px_1fr] gap-y-0.5 align-start ml-auto w-[220px]">
                     <div className="font-semibold text-slate-800">Our Ref.</div>
                     <div className="text-slate-600">:</div>
                     <div className="text-black font-bold">{viewingQuote.quotation_no}</div>
@@ -735,9 +735,6 @@ export default function QuotationView({
                       })}
                     </div>
 
-                    {/* Spacer matching left column Tel row */}
-                    <div className="col-span-3 h-[18px]"></div>
-
                     <div className="font-semibold text-slate-800">No. of Page</div>
                     <div className="text-slate-600">:</div>
                     <div className="text-black">1 of 1</div>
@@ -748,7 +745,7 @@ export default function QuotationView({
                 <table 
                   className="w-full border-collapse text-black bg-white table-fixed mb-2" 
                   style={{ 
-                    minHeight: "440px",
+                    minHeight: "340px",
                     border: tableBorderStyle !== "horizontal" ? "1px solid black" : "none"
                   }}
                 >
@@ -768,12 +765,20 @@ export default function QuotationView({
                       <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>UNIT</th>
                       <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>DESCRIPTION</th>
                       <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b border-black font-bold p-1 text-center align-middle`}>DURATION</th>
-                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b border-black font-bold p-1 text-center align-middle`}>UNIT RATE</th>
-                      <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>TOTAL PRICE</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b border-black font-bold p-1 text-center align-middle`}>
+                        <div className="leading-tight">UNIT RATE</div>
+                      </th>
+                      <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>
+                        <div className="leading-tight">TOTAL PRICE</div>
+                        <div className="text-[8.5px] font-bold text-black mt-0.5">THB</div>
+                      </th>
                     </tr>
                     <tr className="h-[16px] text-[8px] font-semibold">
                       <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black text-center align-middle text-slate-500`}>Days</th>
-                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black text-center align-middle text-slate-500`}>Per Day</th>
+                      <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black text-center align-middle text-slate-500`}>
+                        <div className="leading-none text-[8px]">Per Day</div>
+                        <div className="text-[8.5px] font-bold text-black mt-0.5">THB</div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -791,37 +796,42 @@ export default function QuotationView({
                     ))}
 
                     {/* Filler rows continuing vertical and horizontal borders */}
-                    {Array.from({ length: Math.max(1, 10 - printItems.length) }).map((_, idx) => (
-                      <tr key={`empty-${idx}`} className={`text-[10.5px] h-[28px] align-middle ${tableBorderStyle === "grid" ? "border-b border-black" : (printItems.length + idx) % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono font-medium text-slate-700 p-1`}></td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono font-medium p-1`}></td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center p-1`}></td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap`}>
-                          {idx === 0 ? "Note : Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client." : ""}
-                        </td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-center font-mono p-1`}></td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-right px-2 font-mono p-1`}></td>
-                        <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} text-right px-2 font-mono font-semibold p-1`}></td>
-                      </tr>
-                    ))}
-
-                    {/* *** LAST ENTRY *** Row */}
-                    <tr className="text-[9px] font-bold tracking-[0.25em] text-slate-400 uppercase select-none h-[24px] bg-white">
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black text-center align-middle`}>*** LAST ENTRY ***</td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                      <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} border-b border-black`}></td>
-                    </tr>
+                    {(() => {
+                      const fillerLength = Math.max(1, 6 - printItems.length);
+                      return Array.from({ length: fillerLength }).map((_, idx) => {
+                        const isLastFiller = idx === fillerLength - 1;
+                        return (
+                          <tr key={`empty-${idx}`} className={`text-[10.5px] h-[28px] align-top ${tableBorderStyle === "grid" ? "border-b border-black" : (printItems.length + idx) % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-center font-mono font-medium text-slate-700 p-1`}></td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-center font-mono font-medium p-1`}></td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-center p-1`}></td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} px-3 py-1.5 text-left text-[10px] italic font-semibold text-slate-500 leading-relaxed align-top whitespace-pre-wrap`}>
+                              {idx === 0 ? (
+                                <div className="text-left py-1">
+                                  <div className="font-bold text-black text-[10.5px] mb-1">Note :</div>
+                                  <div className="whitespace-pre-wrap text-slate-700 font-medium font-sans leading-relaxed text-[10px] pl-3">
+                                    {viewingQuote.remarks || viewingQuote.notes || "Air Compressor, Electrical, Water, Loading and Lifting Equipment at Client Side By client."}
+                                  </div>
+                                  <div className="text-center font-bold text-black text-[10px] tracking-[0.2em] mt-4 uppercase">
+                                    ** LAST ENTRY **
+                                  </div>
+                                </div>
+                              ) : ""}
+                            </td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-center font-mono p-1`}></td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-right px-2 font-mono p-1`}></td>
+                            <td className={`${tableBorderStyle !== "horizontal" ? "border-l border-r border-black" : ""} ${isLastFiller ? "border-b border-black" : ""} text-right px-2 font-mono font-semibold p-1`}></td>
+                          </tr>
+                        );
+                      });
+                    })()}
                   </tbody>
                 </table>
 
                 {/* Total Value aligned right */}
-                <div className="flex justify-end items-center mb-4">
+                <div className="flex justify-end items-center mb-3">
                   <span className="text-[11px] font-bold text-black mr-6">Total Value</span>
-                  <div className="w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white" style={{ border: '3px double #000', margin: 0 }}>
+                  <div className="w-[110px] py-1 px-2 text-right font-mono font-bold text-[11px] bg-white" style={{ borderTop: '1px solid black', borderBottom: '3px double black', borderLeft: 'none', borderRight: 'none', margin: 0 }}>
                     {viewingQuote.total_amount.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2
@@ -830,24 +840,34 @@ export default function QuotationView({
                 </div>
 
                 {/* Terms / Remarks Blocks */}
-                <div className="text-[9.5px] text-left text-slate-700 pl-4 mb-3" style={{ lineHeight: '1.1' }}>
+                <div className="text-[9.5px] text-left text-slate-700 pl-4 mb-2" style={{ lineHeight: '1.1' }}>
                   <div className="font-bold text-black mb-1">Terms & Conditions:</div>
                   <div className="flex flex-col" style={{ gap: '1px' }}>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- 30 days validity from date of quotation.</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices above are quoted in THB</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices does not include 7% VAT</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Payment term: 30 Days from date of invoice.</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Please state our IKM reference no. on your work/purchase order.</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
-                    <p className="m-0 p-0 pl-3" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
-                    <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Above price will be charged by unit rate and actual</p>
+                    {viewingQuote.terms_conditions ? (
+                      viewingQuote.terms_conditions.split('\n').map((line: string, lIdx: number) => (
+                        <p key={lIdx} className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>
+                          {line.startsWith('-') || line.startsWith('•') ? line : `- ${line}`}
+                        </p>
+                      ))
+                    ) : (
+                      <>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- 30 days validity from date of quotation.</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices above are quoted in THB</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- All prices does not include 7% VAT</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Payment term: 30 Days from date of invoice.</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Please state our IKM reference no. on your work/purchase order.</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- IKM Testing shall not be liable for loss or damage or delay or failure in performance hereunder arising or resulting directly</p>
+                        <p className="m-0 p-0 pl-3" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>or indirectly from amongst other things such as epidemics and/or quarantine restrictions.</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- If contract or PO is cancelled after mobilization has started, then all expenses incurred shall be invoiced to Client.</p>
+                        <p className="m-0 p-0" style={{ margin: '0px 0px 1px 0px', padding: 0, lineHeight: '1.1' }}>- Above price will be charged by unit rate and actual</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* Dual Signatures Section */}
-                <div className="grid grid-cols-2 gap-12 text-[11px] pt-4 text-left">
-                  <div className="flex flex-col justify-between h-[125px]">
+                <div className="grid grid-cols-2 gap-12 text-[11px] pt-3 text-left">
+                  <div className="flex flex-col justify-between h-[100px]">
                     <div className="text-slate-800">Thanks and Regards</div>
                     
                     <div className="mt-auto relative">
@@ -855,7 +875,7 @@ export default function QuotationView({
                         <img 
                           src={savedSignature} 
                           alt="Signature" 
-                          className="h-[55px] object-contain max-w-[200px] absolute bottom-[22px] left-[10px] select-none pointer-events-none"
+                          className="h-[45px] object-contain max-w-[200px] absolute bottom-[22px] left-[10px] select-none pointer-events-none"
                           referrerPolicy="no-referrer"
                         />
                       )}
@@ -864,7 +884,7 @@ export default function QuotationView({
                     </div>
                   </div>
                   
-                  <div className="flex flex-col justify-between h-[125px] pl-6">
+                  <div className="flex flex-col justify-between h-[100px] pl-6">
                     <div className="font-bold text-black">CONFIRMED AND ACCEPTED BY</div>
                     
                     <div className="mt-auto">
@@ -877,7 +897,7 @@ export default function QuotationView({
                           </div>
                         </>
                       ) : (
-                        <div className="h-[40px] flex items-end">
+                        <div className="h-[30px] flex items-end">
                           <div className="border-b border-black w-[220px] mb-1"></div>
                         </div>
                       )}
