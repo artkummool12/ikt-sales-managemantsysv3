@@ -178,7 +178,7 @@ try {
                     <span class="small text-muted"><i class="fa fa-bullseye me-1 text-warning"></i> <?php echo htmlspecialchars($q['project_name'] ?: 'ดีลขายทั่วไป'); ?></span>
                   </td>
                   <td><?php echo htmlspecialchars($q['quotation_date']); ?></td>
-                  <td class="fw-bold font-monospace text-dark">฿<?php echo number_format($q['grand_total'], 2); ?></td>
+                  <td class="fw-bold font-monospace text-dark">THB.<?php echo number_format($q['grand_total'], 2); ?></td>
                   <td>
                     <span class="badge p-1.5 rounded <?php 
                       echo $q['status'] === 'Approved' ? 'bg-success' : 
@@ -288,15 +288,15 @@ try {
                   <div class="card p-3 bg-light border-0">
                     <div class="d-flex justify-content-between mb-1.5">
                       <span class="small text-muted">มูลค่ารวมก่อนภาษี (Subtotal):</span>
-                      <span class="fw-bold font-monospace text-slate-800">฿<span id="subtotal-display">0.00</span></span>
+                      <span class="fw-bold font-monospace text-slate-800">THB.<span id="subtotal-display">0.00</span></span>
                     </div>
                     <div class="d-flex justify-content-between mb-1.5">
                       <span class="small text-muted">ภาษีมูลค่าเพิ่ม (VAT 7%):</span>
-                      <span class="fw-bold font-monospace text-slate-800">฿<span id="vat-display">0.00</span></span>
+                      <span class="fw-bold font-monospace text-slate-800">THB.<span id="vat-display">0.00</span></span>
                     </div>
                     <div class="d-flex justify-content-between border-top pt-2 mt-1.5">
                       <span class="small fw-bold text-dark">มูลค่ารวมสุทธิ (Grand Total):</span>
-                      <span class="fs-5 fw-extrabold font-monospace text-success">฿<span id="grandtotal-display">0.00</span></span>
+                      <span class="fs-5 fw-extrabold font-monospace text-success">THB.<span id="grandtotal-display">0.00</span></span>
                     </div>
                   </div>
                 </div>

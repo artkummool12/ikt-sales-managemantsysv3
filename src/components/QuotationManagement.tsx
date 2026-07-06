@@ -1127,20 +1127,20 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
         {/* Elegant Header with Logo & Brand details */}
         <div className="flex justify-between items-start mb-2">
           <div className="flex-1 pr-6">
-            <div className="text-[14px] font-bold uppercase tracking-wide" style={{ color: themeColor !== "#1e293b" ? themeColor : "black" }}>
-              IKM TESTING (THAILAND) CO., LTD.
-            </div>
-            <div className="text-[10px] leading-relaxed text-slate-700 mt-1">
-              <p>
-                155/167 Moo 5, Samnakthon Sub-district, Banchang District,
-                Rayong Province
-              </p>
-              <p>Thailand 21130</p>
-              <p className="mt-1">
-                Tel : + 66 38 601 996 to 8
-              </p>
-            </div>
-          </div>
+  <div className="text-[14px] font-bold uppercase tracking-wide" style={{ color: themeColor !== "#1e293b" ? themeColor : "black" }}>
+    IKM TESTING (THAILAND) CO., LTD.
+  </div>
+  <div className="text-[10px] text-slate-700" style={{ lineHeight: '1.2' }}>
+    <p className="mb-0">
+      155/167 Moo 5, Samnakthon Sub-district, Banchang District,
+      Rayong Province
+    </p>
+    <p className="mb-0">Thailand 21130</p>
+    <p className="mb-0">
+      Tel : + 66 38 601 996 to 8
+    </p>
+  </div>
+</div>
           <div className="text-right shrink-0">
             <img
               src="https://lh3.googleusercontent.com/d/15kgSg9bp-J9mYETYxw2BfAVNNNBAkusA"
@@ -1244,24 +1244,18 @@ function PrintPreview({ id, onClose, onEdit, quotations, customers }: any) {
             <col className="w-[110px]" />
           </colgroup>
           <thead>
-            <tr className="h-[36px] text-[10px] font-bold">
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>ITEM</th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>QTY</th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>UNIT</th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>DESCRIPTION</th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>
-                <div className="flex flex-col items-center justify-center">
-                  <span>DURATION</span>
-                  <span className="text-[8px] font-normal lowercase">Days</span>
-                </div>
-              </th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>
-                <div className="flex flex-col items-center justify-center">
-                  <span>UNIT RATE</span>
-                  <span className="text-[8px] font-normal">Per Day</span>
-                </div>
-              </th>
-              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>TOTAL PRICE</th>
+            <tr className="h-[20px] text-[10px] font-bold">
+              <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>ITEM</th>
+              <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>QTY</th>
+              <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>UNIT</th>
+              <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>DESCRIPTION</th>
+              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b border-black font-bold p-1 text-center align-middle`}>DURATION</th>
+              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b border-black font-bold p-1 text-center align-middle`}>UNIT RATE</th>
+              <th rowSpan={2} className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black font-bold p-1 text-center align-middle`}>TOTAL PRICE</th>
+            </tr>
+            <tr className="h-[16px] text-[8px] font-semibold">
+              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black text-center align-middle text-slate-500`}>Days</th>
+              <th className={`${tableBorderStyle !== "horizontal" ? "border-l border-r" : ""} border-b-2 border-black text-center align-middle text-slate-500`}>Per Day</th>
             </tr>
           </thead>
           <tbody>

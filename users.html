@@ -16,6 +16,11 @@
   
   <!-- Custom Application Override CSS -->
   <link rel="stylesheet" href="/style.css">
+  <script>
+    if (sessionStorage.getItem('users_auth_passed') !== 'true') {
+      document.write('<style id="auth-hide-style">.app-wrapper { display: none !important; }</style>');
+    }
+  </script>
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 
@@ -208,9 +213,49 @@
     let usersCached = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
-      usersCached = await SupabaseDB.getUsers();
-      renderUsers();
-      onMatrixRoleSelectChange();
+      if (sessionStorage.getItem('users_auth_passed') !== 'true') {
+        const { value: password } = await Swal.fire({
+          title: 'Users & Permissions Restricted',
+          html: 'Please enter the access password to view or modify system accounts:<br><small class="text-danger">* สำหรับผู้ดูแลระบบเท่านั้น</small>',
+          input: 'password',
+          inputPlaceholder: 'Enter Password',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          confirmButtonText: 'Verify Password',
+          confirmButtonColor: '#6610f2',
+          showCancelButton: true,
+          cancelButtonText: 'Go Back',
+          inputValidator: (value) => {
+            if (!value) {
+              return 'Password is required!';
+            }
+          }
+        });
+
+        if (password === '43210344') {
+          sessionStorage.setItem('users_auth_passed', 'true');
+          const hideStyle = document.getElementById('auth-hide-style');
+          if (hideStyle) hideStyle.remove();
+          usersCached = await SupabaseDB.getUsers();
+          renderUsers();
+          onMatrixRoleSelectChange();
+        } else {
+          await Swal.fire({
+            icon: 'error',
+            title: 'Access Denied',
+            text: 'Incorrect password! Redirecting...',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          window.location.href = 'index.html';
+        }
+      } else {
+        const hideStyle = document.getElementById('auth-hide-style');
+        if (hideStyle) hideStyle.remove();
+        usersCached = await SupabaseDB.getUsers();
+        renderUsers();
+        onMatrixRoleSelectChange();
+      }
     });
 
     function renderUsers() {
